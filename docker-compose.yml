@@ -1,10 +1,10 @@
 version: '3.8'
 
 services:
-  cielConceptToGesApi:
+  gesbackend:
     build:
-      context: ./cielConceptToGesApi
+      context: ./backend
       dockerfile: Dockerfile
     ports:
       - "5001:5001"
-    command: ["flask", "cielConceptToGesApi.py"]
+    restart: "always"

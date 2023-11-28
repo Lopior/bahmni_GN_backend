@@ -44,13 +44,6 @@ def getGes():
         else:
             return obtenerGes()
 
-@app.route('/ges2', methods=['GET'])
-def getGes2():
-    #return obtenerGes()
-    with open('ges2.json', 'r') as f:
-        data = json.load(f)
-    return jsonify(data)
-
 
 # obtener notificaciones ges por id
 @app.route('/ges/<string:id_ges>', methods=['GET'])

@@ -1,0 +1,23 @@
+[
+    {
+        "id":"1",
+        "paciente":"Pablo Pizarro",
+        "fecha":"27/10/2022",
+        "problema_ges":"Diabetes mellitus tipo 2",
+        "estado":"Pendiente"
+    },
+    {
+        "id":"2",
+        "paciente":"Pablo Pizarro",
+        "fecha":"02/10/2022",
+        "problema_ges":"Prevención secundaria enfermedad renal crónica terminal",
+        "estado":"Notificada"
+    },
+    {
+        "id":"3",
+        "paciente":"Ruben Cofre",
+        "fecha":"05/12/2022",
+        "problema_ges":"Hipertensión arterial primaria o esencial en personas de 15 años y más",
+        "estado":"Descartada"
+    }
+]

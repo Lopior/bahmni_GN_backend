@@ -1,0 +1,20 @@
+[
+    {
+        "id":"mbwu6-4lmq5-aquhh-vfybm",
+        "paciente":"Pablo Pizarro",
+        "fecha":"27/10/2022",
+        "estado":"Vigente"
+    },
+    {
+        "id":"ou5hi-2ba9v-dkc7f-7ynw4",
+        "paciente":"Pablo Pizarro",
+        "fecha":"02/10/2022",
+        "estado":"Pendiente"
+    },
+    {
+        "id":"gf3hi-js62v-msh23-ksi34",
+        "paciente":"Ruben Cofre",
+        "fecha":"05/12/2022",
+        "estado":"Anulada"
+    }
+]

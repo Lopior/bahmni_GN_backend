@@ -16,8 +16,5 @@ COPY backend/ /app/
 # Expone el puerto 5000 (el mismo que está configurado en tu aplicación Flask)
 EXPOSE 5001
 
-# Define la variable de entorno para Flask
-ENV FLASK_APP=app.py
-
-# Comando para ejecutar la aplicación cuando el contenedor se inicia
-CMD ["flask", "run", "--host=0.0.0.0"]
+# Ejecuta los scripts cuando el contenedor se inicia
+CMD ["python", "app.py"] 

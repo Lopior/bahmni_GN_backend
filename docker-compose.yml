@@ -3,7 +3,7 @@ version: '3.8'
 services:
   gesbackend:
     build:
-      context: ./backend
+      context: ./
       dockerfile: Dockerfile
     ports:
       - "5001:5001"

@@ -8,3 +8,8 @@ services:
     ports:
       - "5001:5001"
     restart: "always"
+    networks:
+      bahmni-standard_default:
+
+networks:
+  bahmni-standard_default:

@@ -13,6 +13,7 @@ from ges import obtenerGesPorId
 from ges import notificarGes
 from ges import firmaPacienteGes
 from ges import obtenerGesPorUuid
+from ges import obtenerPractitioner
 import json
 
 app = Flask(__name__)
@@ -55,7 +56,8 @@ def getGesById(id_ges):
 # actualizar estado de GES por id
 @app.route('/ges/<string:id_ges>/<string:estado>', methods=['PUT'])
 def updateGes(id_ges, estado):
-    return cambiarEstadoGes(id_ges, estado)
+    practitioner_user = request.args.get('practitioner')
+    return cambiarEstadoGes(id_ges, estado, practitioner_user)
 
 
 # Notificar GES Routes
@@ -65,12 +67,16 @@ def notifyGes():
     print(request.json)
     return notificarGes(request.json)
 
-# Notificar GES Routes
+# Firma paciente GES Routes
 @app.route('/ges/firma', methods=['POST'])
 def PatientSignGes():
     print("********** Back: request del frontend **********")
     print(request.json)
     return firmaPacienteGes(request.json)
+# Obtener person_id y nombre del practioner con el id
+@app.route('/practitioner/<string:id_practitioner>', methods=['GET'])
+def getPractitioner(id_practitioner):
+    return obtenerPractitioner(id_practitioner)
 
 
 # Run Server

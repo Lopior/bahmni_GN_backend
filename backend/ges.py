@@ -12,7 +12,7 @@ import uuid
 def obtenerGes():
     conn = mysql.connector.connect(
         host=config.host,
-        database=config.bd,
+        database=config.bd_notificacion,
         user=config.username,
         password=config.password
     )
@@ -37,7 +37,7 @@ def obtenerGes():
 def obtenerGesPorRun(run_paciente):
     conn = mysql.connector.connect(
         host=config.host,
-        database=config.bd,
+        database=config.bd_notificacion,
         user=config.username,
         password=config.password
     )
@@ -63,7 +63,7 @@ def obtenerGesPorRun(run_paciente):
 def obtenerGesPorUuid(uuid):
     conn = mysql.connector.connect(
         host=config.host,
-        database=config.bd,
+        database=config.bd_notificacion,
         user=config.username,
         password=config.password
     )
@@ -88,7 +88,7 @@ def obtenerGesPorUuid(uuid):
 def obtenerGesPorId(id_ges):
     conn = mysql.connector.connect(
         host=config.host,
-        database=config.bd,
+        database=config.bd_notificacion,
         user=config.username,
         password=config.password
     )
@@ -112,20 +112,29 @@ def obtenerGesPorId(id_ges):
 
 
 #cambio de estado de GES por id
-def cambiarEstadoGes(id_ges, estado):
-    conn = mysql.connector.connect(
-        host=config.host,
-        database=config.bd,
-        user=config.username,
-        password=config.password
-    )
+def cambiarEstadoGes(id_ges, estado, practitioner_user):
+    
+    try:
+        conn = mysql.connector.connect(
+            host=config.host,
+            database=config.bd_notificacion,
+            user=config.username,
+            password=config.password
+        )
 
-    cur = conn.cursor()
-    cur.execute("UPDATE notificacion_ges SET estado = %s WHERE id = %s;", (estado, id_ges))
-    conn.commit()
-    cur.close()
-    conn.close()
-    return jsonify({'cod': 'ok','message': 'Estado cambiado'})
+        #calcular fecha y hora actual
+        bd_openmrs = config.bd_openmrs
+        current_datetime = datetime.now()
+        cur = conn.cursor()
+        cur.execute("UPDATE notificacion_ges SET estado = %s, fechahora_actualizacion = %s, usuario_actualizacion = (SELECT t.person_id_id FROM "+bd_openmrs+".users t WHERE username = %s) WHERE id = %s;", (estado, current_datetime, practitioner_user, id_ges))
+        conn.commit()
+        cur.close()
+        conn.close()
+        return jsonify({'cod': 'ok','message': 'Estado cambiado'})
+    
+    except Exception as e:
+        print("Error al cambiar estado GES:", str(e))
+        return jsonify({'cod': 'error', 'message': 'error al notificar GES'+str(e)})
 
 #Notificar GES
 
@@ -140,7 +149,7 @@ def notificarGes(request):
 
         conn = mysql.connector.connect(
             host=config.host,
-            database=config.bd,
+            database=config.bd_notificacion,
             user=config.username,
             password=config.password
         )
@@ -149,7 +158,7 @@ def notificarGes(request):
         cur = conn.cursor()
         current_datetime = datetime.now()
         uuid_v4 = str(uuid.uuid4())
-        cur.execute("UPDATE notificacion_ges SET nombre_notificador = %s, rut_notificador = %s, email_paciente = %s, tipo = %s, fechahora_notificacion = %s, nombre_representante = %s, rut_representante = %s, telefono_representante = %s, email_representante = %s, estado = %s , fechahora_actualizacion = %s, uuid = %s WHERE id = %s;", (data['nombre_notificador'], data['rut_notificador'], data['email_paciente'],  data['tipo'], current_datetime, data['nombre_representante'], data['rut_representante'], data['telefono_representante'], data['email_representante'], 'N', current_datetime, uuid_v4 , data['id']))
+        cur.execute("UPDATE notificacion_ges SET notificador_id = %s, nombre_notificador = %s, rut_notificador = %s, email_paciente = %s, tipo = %s, fechahora_notificacion = %s, nombre_representante = %s, rut_representante = %s, telefono_representante = %s, email_representante = %s, estado = %s , fechahora_actualizacion = %s, usuario_actualizacion = %s, uuid = %s WHERE id = %s;", (data['notificador_id'], data['nombre_notificador'], data['rut_notificador'], data['email_paciente'],  data['tipo'], current_datetime, data['nombre_representante'], data['rut_representante'], data['telefono_representante'], data['email_representante'], 'N', current_datetime, data['notificador_id'], uuid_v4 , data['id']))
         conn.commit()
         cur.close()
         conn.close()
@@ -175,7 +184,7 @@ def firmaPacienteGes(request):
 
         conn = mysql.connector.connect(
             host=config.host,
-            database=config.bd,
+            database=config.bd_notificacion,
             user=config.username,
             password=config.password
         )
@@ -197,7 +206,26 @@ def firmaPacienteGes(request):
         return jsonify({'cod': 'error', 'message': 'error al notificar GES'+str(e)})
         
 
+#obtener person_id y person_name del practioner con el id desde la bd
+def obtenerPractitioner(practitioner_id):
+    conn = mysql.connector.connect(
+        host=config.host,
+        database=config.bd_openmrs,
+        user=config.username,
+        password=config.password
+    )
 
+    cur = conn.cursor()
+    cur.execute("SELECT p.person_id, p.given_name, p.family_name FROM users t INNER JOIN person_name p ON t.person_id = p.person_id WHERE t.username = %s;", (practitioner_id,))
+
+    results = cur.fetchall()
+    content = {}
+    for (person_id, given_name, family_name) in results:
+        content = {'person_id': person_id, 'given_name': given_name, 'family_name': family_name}
+
+    cur.close()
+    conn.close()
+    return jsonify(content)
     
 
 

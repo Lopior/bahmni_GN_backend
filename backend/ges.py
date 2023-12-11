@@ -114,6 +114,8 @@ def obtenerGesPorId(id_ges):
 #cambio de estado de GES por id
 def cambiarEstadoGes(id_ges, estado, practitioner_user):
     
+    practitioner_user = practitioner_user.strip()  # Remove leading and trailing spaces
+    
     try:
         conn = mysql.connector.connect(
             host=config.host,
@@ -121,12 +123,13 @@ def cambiarEstadoGes(id_ges, estado, practitioner_user):
             user=config.username,
             password=config.password
         )
+        
 
         #calcular fecha y hora actual
         bd_openmrs = config.bd_openmrs
         current_datetime = datetime.now()
         cur = conn.cursor()
-        cur.execute("UPDATE notificacion_ges SET estado = %s, fechahora_actualizacion = %s, usuario_actualizacion = (SELECT t.person_id_id FROM "+bd_openmrs+".users t WHERE username = %s) WHERE id = %s;", (estado, current_datetime, practitioner_user, id_ges))
+        cur.execute("UPDATE notificacion_ges SET estado = %s, fechahora_actualizacion = %s, usuario_actualizacion = (SELECT t.person_id FROM "+bd_openmrs+".users t WHERE username = %s) WHERE id = %s;", (estado, current_datetime, practitioner_user, id_ges))
         conn.commit()
         cur.close()
         conn.close()
@@ -163,7 +166,7 @@ def notificarGes(request):
         cur.close()
         conn.close()
         
-        enviarCorreoElectronicoGes(data['email_paciente'], "http://localhost:5000/notificaciongespaciente/"+uuid_v4)
+        enviarCorreoElectronicoGes(data['email_paciente'], "http://http://127.0.0.1:5000/notificaciongespaciente/"+uuid_v4)
 
 
         return jsonify({'cod': 'ok', 'message': 'GES notificado correctamente'})
@@ -208,24 +211,33 @@ def firmaPacienteGes(request):
 
 #obtener person_id y person_name del practioner con el id desde la bd
 def obtenerPractitioner(practitioner_id):
-    conn = mysql.connector.connect(
-        host=config.host,
-        database=config.bd_openmrs,
-        user=config.username,
-        password=config.password
-    )
+    try:
+        print(practitioner_id)
+        practitioner_id = practitioner_id.strip()  # Remove leading and trailing spaces
+        practitioner_id = practitioner_id.replace('"', '')  # Remove double quotes
+        
+        conn = mysql.connector.connect(
+            host=config.host,
+            database=config.bd_openmrs,
+            user=config.username,
+            password=config.password
+        )
 
-    cur = conn.cursor()
-    cur.execute("SELECT p.person_id, p.given_name, p.family_name FROM users t INNER JOIN person_name p ON t.person_id = p.person_id WHERE t.username = %s;", (practitioner_id,))
+        cur = conn.cursor()
+        cur.execute("SELECT p.person_id, p.given_name, p.family_name FROM users t INNER JOIN person_name p ON t.person_id = p.person_id WHERE t.username = %s;", (practitioner_id,))
 
-    results = cur.fetchall()
-    content = {}
-    for (person_id, given_name, family_name) in results:
-        content = {'person_id': person_id, 'given_name': given_name, 'family_name': family_name}
+        results = cur.fetchall()
+        content = {}
+        for (person_id, given_name, family_name) in results:
+            content = {'person_id': person_id, 'given_name': given_name, 'family_name': family_name}
 
-    cur.close()
-    conn.close()
-    return jsonify(content)
+        cur.close()
+        conn.close()
+        print(content)
+        return jsonify(content)
+    except Exception as e:
+        print("Error al obtener datos del profesional:", str(e))
+        return jsonify({'cod': 'error', 'message': 'error al obtener datos del profesional'+str(e)})
     
 
 

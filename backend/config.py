@@ -4,6 +4,7 @@ username = 'root'
 password = 'adminAdmin!123'
 host = 'localhost'
 port = 3306
-bd = 'bahmni_notification'
+bd_notificacion = 'bahmni_notification'
+bd_openmrs = 'openmrs'
 
 

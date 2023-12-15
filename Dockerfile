@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend/ /app/
 
 # Expone el puerto 5000 (el mismo que está configurado en tu aplicación Flask)
-EXPOSE 5001
+EXPOSE 8093
 
 # Ejecuta los scripts cuando el contenedor se inicia
 CMD ["python", "app.py"] 

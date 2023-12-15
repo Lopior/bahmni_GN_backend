@@ -5,13 +5,17 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
+    hostname: gesbackend  
     ports:
-      - "5001:5001"
+      - "8093:8093"
     restart: "always"
     networks:
       bahmni-standard_default:
         aliases:
-          - "gn_frontend"
+          - "gn_backend-alias"
 
 networks:
   bahmni-standard_default:
+   
+      
+

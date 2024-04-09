@@ -50,7 +50,7 @@ def obtenerGes():
 
 
 #obtener GES por run
-def obtenerGesPorRun(run_paciente):
+def obtenerGesPorRun(rut_paciente):
     try:
         conn = mysql.connector.connect(
             host=host,
@@ -60,7 +60,7 @@ def obtenerGesPorRun(run_paciente):
         )
 
         cur = conn.cursor()
-        cur.execute("SELECT ng.id, ng.rut_paciente, ng.nombre_paciente, ng.fechahora_registro, ng.diagnostico_ges, ng.estado FROM notificacion_ges ng WHERE ng.rut_paciente = %s;", (run_paciente,))
+        cur.execute("SELECT ng.id, ng.rut_paciente, ng.nombre_paciente, ng.fechahora_registro, ng.diagnostico_ges, ng.estado FROM notificacion_ges ng WHERE ng.rut_paciente = %s;", (rut_paciente,))
 
         results = cur.fetchall()
         ges = []

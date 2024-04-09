@@ -74,11 +74,10 @@ def obtenerGesPorRun(run_paciente):
         conn.close()
         return jsonify(ges)
     except mysql.connector.Error as err:
-        print(f"Algo salió mal: {err}")
+        return jsonify({"error": f"Algo salió mal: {err}"})
     except Exception as e:
-        print(f"Ocurrió un error inesperado: {e}")
-
-
+        return jsonify({"error": f"Ocurrió un error inesperado: {e}"})
+    
 #obtener GES por uuid
 def obtenerGesPorUuid(uuid):
     try:

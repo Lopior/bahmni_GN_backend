@@ -21,120 +21,104 @@ password = os.environ.get("MYSQL_PASSWORD_NOTIFICACIONES")
 bd_openmrs = os.environ.get("MYSQL_OPENMRS_DATABASE")
 
 def obtenerGes():
-    try:
-        conn = mysql.connector.connect(
-            host=host,
-            database=bd_notificacion,
-            user=username,
-            password=password
-        )
+    conn = mysql.connector.connect(
+        host=host,
+        database=bd_notificacion,
+        user=username,
+        password=password
+    )
 
-        cur = conn.cursor()
-        cur.execute("SELECT ng.id, ng.rut_paciente, ng.nombre_paciente, ng.fechahora_registro, ng.diagnostico_ges, ng.estado FROM notificacion_ges ng;")
+    cur = conn.cursor()
+    cur.execute("SELECT ng.id, ng.rut_paciente, ng.nombre_paciente, ng.fechahora_registro, ng.diagnostico_ges, ng.estado FROM notificacion_ges ng;")
 
-        results = cur.fetchall()
-        ges = []
+    results = cur.fetchall()
+    ges = []
+    content = {}
+    for (id,rut_paciente,nombre_paciente,fecha_registro,diagnostico_ges,estado) in results:
+        content = {'id': id, 'rut_paciente': rut_paciente, 'paciente': nombre_paciente, 'fecha': fecha_registro, 'problema_ges': diagnostico_ges, 'estado': estado}
+        ges.append(content)
         content = {}
-        for (id,rut_paciente,nombre_paciente,fecha_registro,diagnostico_ges,estado) in results:
-            content = {'id': id, 'rut_paciente': rut_paciente, 'paciente': nombre_paciente, 'fecha': fecha_registro, 'problema_ges': diagnostico_ges, 'estado': estado}
-            ges.append(content)
-            content = {}
 
-        cur.close()
-        conn.close()
-        return jsonify(ges)
-    except mysql.connector.Error as err:
-        print(f"Algo salió mal: {err}")
-    except Exception as e:
-        print(f"Ocurrió un error inesperado: {e}")
 
+    cur.close()
+    conn.close()
+    return jsonify(ges)
 
 #obtener GES por run
-def obtenerGesPorRun(rut_paciente):
-    try:
-        conn = mysql.connector.connect(
-            host=host,
-            database=bd_notificacion,
-            user=username,
-            password=password
-        )
+def obtenerGesPorRun(run_paciente):
+    conn = mysql.connector.connect(
+        host=host,
+        database=bd_notificacion,
+        user=username,
+        password=password
+    )
 
-        cur = conn.cursor()
-        cur.execute("SELECT ng.id, ng.rut_paciente, ng.nombre_paciente, ng.fechahora_registro, ng.diagnostico_ges, ng.estado FROM notificacion_ges ng WHERE ng.rut_paciente = %s;", (rut_paciente,))
+    cur = conn.cursor()
+    cur.execute("SELECT ng.id, ng.rut_paciente, ng.nombre_paciente, ng.fechahora_registro, ng.diagnostico_ges, ng.estado FROM notificacion_ges ng WHERE ng.rut_paciente = %s;", (run_paciente,))
 
-        results = cur.fetchall()
-        ges = []
+    results = cur.fetchall()
+    ges = []
+    content = {}
+    for (id,rut_paciente,nombre_paciente,fecha_registro,diagnostico_ges,estado) in results:
+        content = {'id': id, 'rut_paciente': rut_paciente, 'paciente': nombre_paciente, 'fecha': fecha_registro, 'problema_ges': diagnostico_ges, 'estado': estado}
+        ges.append(content)
         content = {}
-        for (id,rut_paciente,nombre_paciente,fecha_registro,diagnostico_ges,estado) in results:
-            content = {'id': id, 'rut_paciente': rut_paciente, 'paciente': nombre_paciente, 'fecha': fecha_registro, 'problema_ges': diagnostico_ges, 'estado': estado}
-            ges.append(content)
-            content = {}
 
-        cur.close()
-        conn.close()
-        return jsonify(ges)
-    except mysql.connector.Error as err:
-        return jsonify({"error": f"Algo salió mal: {err}"})
-    except Exception as e:
-        return jsonify({"error": f"Ocurrió un error inesperado: {e}"})
-    
+
+    cur.close()
+    conn.close()
+    return jsonify(ges)
+
+
 #obtener GES por uuid
 def obtenerGesPorUuid(uuid):
-    try:
-        conn = mysql.connector.connect(
-            host=host,
-            database=bd_notificacion,
-            user=username,
-            password=password
-        )
+    conn = mysql.connector.connect(
+        host=host,
+        database=bd_notificacion,
+        user=username,
+        password=password
+    )
 
-        cur = conn.cursor()
-        cur.execute("SELECT ng.id, ng.nombre_establecimiento, ng.direccion_establecimiento, ng.ciudad_establecimiento, ng.nombre_notificador, ng.rut_notificador, ng.rut_paciente, ng.nombre_paciente, ng.aseguradora_paciente, ng.direccion_paciente, ng.comuna_paciente, ng.region_paciente, ng.telefono_fijo_paciente, ng.celular_paciente, ng.email_paciente, ng.diagnostico_ges, ng.tipo, ng.fechahora_notificacion, ng.nombre_representante, ng.rut_representante, ng.telefono_representante, ng.email_representante, ng.estado, ng.firma_notificador, ng.firma_paciente FROM notificacion_ges ng WHERE ng.uuid = %s;", (uuid,))
+    cur = conn.cursor()
+    cur.execute("SELECT ng.id, ng.nombre_establecimiento, ng.direccion_establecimiento, ng.ciudad_establecimiento, ng.nombre_notificador, ng.rut_notificador, ng.rut_paciente, ng.nombre_paciente, ng.aseguradora_paciente, ng.direccion_paciente, ng.comuna_paciente, ng.region_paciente, ng.telefono_fijo_paciente, ng.celular_paciente, ng.email_paciente, ng.diagnostico_ges, ng.tipo, ng.fechahora_notificacion, ng.nombre_representante, ng.rut_representante, ng.telefono_representante, ng.email_representante, ng.estado, ng.firma_notificador, ng.firma_paciente FROM notificacion_ges ng WHERE ng.uuid = %s;", (uuid,))
 
-        results = cur.fetchall()
-        content = {}
-        for (id, nombre_establecimiento, direccion_establecimiento, ciudad_establecimiento, nombre_notificador, rut_notificador, rut_paciente, nombre_paciente, aseguradora_paciente, direccion_paciente, comuna_paciente, region_paciente, telefono_fijo_paciente, celular_paciente, email_paciente, diagnostico_ges, tipo, fechahora_notificacion, nombre_representante, rut_representante, telefono_representante, email_representante, estado, firma_notificador, firma_paciente) in results:
-            fechahora_notificacion = fechahora_notificacion.strftime("%d/%m/%Y %H:%M")
-            content = {'id': id, 'nombre_establecimiento': nombre_establecimiento, 'direccion_establecimiento': direccion_establecimiento, 'ciudad_establecimiento': ciudad_establecimiento,'nombre_notificador': nombre_notificador, 'rut_notificador': rut_notificador, 'rut_paciente': rut_paciente, 'nombre_paciente': nombre_paciente, 'aseguradora_paciente': aseguradora_paciente, 'direccion_paciente': direccion_paciente, 'comuna_paciente': comuna_paciente, 'region_paciente': region_paciente, 'telefono_fijo_paciente': telefono_fijo_paciente, 'celular_paciente': celular_paciente, 'email_paciente': email_paciente, 'diagnostico_ges': diagnostico_ges, 'tipo': tipo, 'fechahora_notificacion': fechahora_notificacion, 'nombre_representante': nombre_representante, 'rut_representante': rut_representante, 'telefono_representante': telefono_representante, 'email_representante': email_representante, 'estado': estado, 'firma_notificador': firma_notificador, 'firma_paciente': firma_paciente}
+    results = cur.fetchall()
+    #ges = []
+    content = {}
+    for (id, nombre_establecimiento, direccion_establecimiento, ciudad_establecimiento, nombre_notificador, rut_notificador, rut_paciente, nombre_paciente, aseguradora_paciente, direccion_paciente, comuna_paciente, region_paciente, telefono_fijo_paciente, celular_paciente, email_paciente, diagnostico_ges, tipo, fechahora_notificacion, nombre_representante, rut_representante, telefono_representante, email_representante, estado, firma_notificador, firma_paciente) in results:
+        fechahora_notificacion = fechahora_notificacion.strftime("%d/%m/%Y %H:%M")
+        content = {'id': id, 'nombre_establecimiento': nombre_establecimiento, 'direccion_establecimiento': direccion_establecimiento, 'ciudad_establecimiento': ciudad_establecimiento,'nombre_notificador': nombre_notificador, 'rut_notificador': rut_notificador, 'rut_paciente': rut_paciente, 'nombre_paciente': nombre_paciente, 'aseguradora_paciente': aseguradora_paciente, 'direccion_paciente': direccion_paciente, 'comuna_paciente': comuna_paciente, 'region_paciente': region_paciente, 'telefono_fijo_paciente': telefono_fijo_paciente, 'celular_paciente': celular_paciente, 'email_paciente': email_paciente, 'diagnostico_ges': diagnostico_ges, 'tipo': tipo, 'fechahora_notificacion': fechahora_notificacion, 'nombre_representante': nombre_representante, 'rut_representante': rut_representante, 'telefono_representante': telefono_representante, 'email_representante': email_representante, 'estado': estado, 'firma_notificador': firma_notificador, 'firma_paciente': firma_paciente}
+    
 
-        cur.close()
-        conn.close()
-        return jsonify(content)
-    except mysql.connector.Error as err:
-        print(f"Algo salió mal: {err}")
-    except Exception as e:
-        print(f"Ocurrió un error inesperado: {e}")
+    cur.close()
+    conn.close()
+    return jsonify(content)
 
 #obtener GES por id
 
 def obtenerGesPorId(id_ges):
-    try:
-        conn = mysql.connector.connect(
-            host=host,
-            database=bd_notificacion,
-            user=username,
-            password=password
-        )
+    conn = mysql.connector.connect(
+        host=host,
+        database=bd_notificacion,
+        user=username,
+        password=password
+    )
 
-        cur = conn.cursor()
-        cur.execute("SELECT ng.id, ng.nombre_establecimiento, ng.direccion_establecimiento, ng.ciudad_establecimiento, ng.nombre_notificador, ng.rut_notificador, ng.rut_paciente, ng.nombre_paciente, ng.aseguradora_paciente, ng.direccion_paciente, ng.comuna_paciente, ng.region_paciente, ng.telefono_fijo_paciente, ng.celular_paciente, ng.email_paciente, ng.diagnostico_ges, ng.tipo, ng.fechahora_notificacion, ng.nombre_representante, ng.rut_representante, ng.telefono_representante, ng.email_representante, ng.estado, ng.firma_notificador, ng.firma_paciente, ng.uuid FROM notificacion_ges ng WHERE ng.id = %s;", (id_ges,))
+    cur = conn.cursor()
+    cur.execute("SELECT ng.id, ng.nombre_establecimiento, ng.direccion_establecimiento, ng.ciudad_establecimiento, ng.nombre_notificador, ng.rut_notificador, ng.rut_paciente, ng.nombre_paciente, ng.aseguradora_paciente, ng.direccion_paciente, ng.comuna_paciente, ng.region_paciente, ng.telefono_fijo_paciente, ng.celular_paciente, ng.email_paciente, ng.diagnostico_ges, ng.tipo, ng.fechahora_notificacion, ng.nombre_representante, ng.rut_representante, ng.telefono_representante, ng.email_representante, ng.estado, ng.firma_notificador, ng.firma_paciente, ng.uuid FROM notificacion_ges ng WHERE ng.id = %s;", (id_ges,))
 
-        results = cur.fetchall()
-        content = {}
-        for (id, nombre_establecimiento, direccion_establecimiento, ciudad_establecimiento, nombre_notificador, rut_notificador, rut_paciente, nombre_paciente, aseguradora_paciente, direccion_paciente, comuna_paciente, region_paciente, telefono_fijo_paciente, celular_paciente, email_paciente, diagnostico_ges, tipo, fechahora_notificacion, nombre_representante, rut_representante, telefono_representante, email_representante, estado, firma_notificador, firma_paciente, uuid) in results:
-            if fechahora_notificacion is not None and fechahora_notificacion != "":
-                fechahora_notificacion = fechahora_notificacion.strftime("%d/%m/%Y %H:%M")
-            else:
-                fechahora_notificacion = None
-            content = {'id': id, 'nombre_establecimiento': nombre_establecimiento, 'direccion_establecimiento': direccion_establecimiento, 'ciudad_establecimiento': ciudad_establecimiento, 'nombre_notificador': nombre_notificador, 'rut_notificador': rut_notificador, 'rut_paciente': rut_paciente, 'nombre_paciente': nombre_paciente, 'aseguradora_paciente': aseguradora_paciente, 'direccion_paciente': direccion_paciente, 'comuna_paciente': comuna_paciente, 'region_paciente': region_paciente, 'telefono_fijo_paciente': telefono_fijo_paciente, 'celular_paciente': celular_paciente, 'email_paciente': email_paciente, 'diagnostico_ges': diagnostico_ges, 'tipo': tipo, 'fechahora_notificacion': fechahora_notificacion, 'nombre_representante': nombre_representante, 'rut_representante': rut_representante, 'telefono_representante': telefono_representante, 'email_representante': email_representante, 'estado': estado, 'firma_notificador': firma_notificador, 'firma_paciente': firma_paciente, 'uuid': uuid}
+    results = cur.fetchall()
+    content = {}
+    for (id, nombre_establecimiento, direccion_establecimiento, ciudad_establecimiento, nombre_notificador, rut_notificador, rut_paciente, nombre_paciente, aseguradora_paciente, direccion_paciente, comuna_paciente, region_paciente, telefono_fijo_paciente, celular_paciente, email_paciente, diagnostico_ges, tipo, fechahora_notificacion, nombre_representante, rut_representante, telefono_representante, email_representante, estado, firma_notificador, firma_paciente, uuid) in results:
+        if fechahora_notificacion is not None and fechahora_notificacion != "":
+            fechahora_notificacion = fechahora_notificacion.strftime("%d/%m/%Y %H:%M")
+        else:
+            fechahora_notificacion = None
+        content = {'id': id, 'nombre_establecimiento': nombre_establecimiento, 'direccion_establecimiento': direccion_establecimiento, 'ciudad_establecimiento': ciudad_establecimiento, 'nombre_notificador': nombre_notificador, 'rut_notificador': rut_notificador, 'rut_paciente': rut_paciente, 'nombre_paciente': nombre_paciente, 'aseguradora_paciente': aseguradora_paciente, 'direccion_paciente': direccion_paciente, 'comuna_paciente': comuna_paciente, 'region_paciente': region_paciente, 'telefono_fijo_paciente': telefono_fijo_paciente, 'celular_paciente': celular_paciente, 'email_paciente': email_paciente, 'diagnostico_ges': diagnostico_ges, 'tipo': tipo, 'fechahora_notificacion': fechahora_notificacion, 'nombre_representante': nombre_representante, 'rut_representante': rut_representante, 'telefono_representante': telefono_representante, 'email_representante': email_representante, 'estado': estado, 'firma_notificador': firma_notificador, 'firma_paciente': firma_paciente, 'uuid': uuid}
 
-        cur.close()
-        conn.close()
-        return jsonify(content)
-    except mysql.connector.Error as err:
-        print(f"Algo salió mal: {err}")
-    except Exception as e:
-        print(f"Ocurrió un error inesperado: {e}")
+    cur.close()
+    conn.close()
+    return jsonify(content)
 
 
 
